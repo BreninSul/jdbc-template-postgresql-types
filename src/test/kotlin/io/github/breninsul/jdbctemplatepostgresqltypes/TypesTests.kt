@@ -3,6 +3,7 @@ package io.github.breninsul.jdbctemplatepostgresqltypes
 import io.github.breninsul.jdbctemplatepostgresqltypes.configuration.JdbcTypesDefaultMapperHolderAutoConfiguration
 import io.github.breninsul.jdbctemplatepostgresqltypes.mapper.JsonRow
 import io.github.breninsul.jdbctemplatepostgresqltypes.mapper.JsonRowMapper
+import io.github.breninsul.jdbctemplatepostgresqltypes.mapper.toRowMapper
 import io.github.breninsul.jdbctemplatepostgresqltypes.type.*
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions
@@ -95,7 +96,7 @@ class TypesTests {
 
         val idByValue =
             jdbcClient.sql("select id from test_en where true and case when :tst is null then true else tst=:tst end ")
-                .param("tst", tst)
+                .param("tst", TestEnum.ONE.toPGEnum("tst_enum"))
                 .query(Int::class.java)
                 .single()
         Assertions.assertEquals(1, idByValue)
@@ -125,7 +126,7 @@ class TypesTests {
         val oneJson =
             jdbcClient.sql("select tst1 from test_jsonb where true and case when :tst1 is null then true else tst1=:tst1 end ")
                 .param("tst1", tst1)
-                .query(JsonRowMapper(TestJson::class.java))
+                .query(TestJson::class.toRowMapper())
                 .single()
         Assertions.assertEquals(testObject1, oneJson)
         val twoJsonByName =

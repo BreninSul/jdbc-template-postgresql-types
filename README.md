@@ -53,7 +53,7 @@ dependencies {
 {
     val testJson = jdbcClient.sql("select jsonb_column from test_table where ... ")
         //... params here
-        .query(JsonRowMapper(TestJson::class.java))
+        .query(JsonRowMapper(TestJson::class.java)) //or TestJson::class.toRowMapper()
         .single()
     //testJson will be TestJson type with 
 }
