@@ -24,6 +24,7 @@
 
 package io.github.breninsul.jdbctemplatepostgresqltypes.mapper
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.JavaType
 import io.github.breninsul.jdbctemplatepostgresqltypes.configuration.PGDefaultMapperHolder
 
@@ -41,6 +42,9 @@ import io.github.breninsul.jdbctemplatepostgresqltypes.configuration.PGDefaultMa
  */
 open class JsonRow(val name: String? = null, val javaType: JavaType, val rawSqlType: Boolean = false) {
     constructor(name: String? = null, javaClass: Class<*>, rawSqlType: Boolean = false) : this(name, javaClass.toJavaType(), rawSqlType)
+
+    constructor(name: String? = null, typeRef: TypeReference<*>, rawSqlType: Boolean = false) : this(name, typeRef.toJavaType(), rawSqlType)
+
 }
 
 /**
@@ -49,5 +53,13 @@ open class JsonRow(val name: String? = null, val javaType: JavaType, val rawSqlT
  * @return The JavaType representation of the current class.
  */
 fun Class<*>.toJavaType(): JavaType {
+    return PGDefaultMapperHolder.getMapper().constructType(this)
+}
+/**
+ * Extension function to convert a TypeReference instance to its corresponding JavaType representation.
+ *
+ * @return The JavaType representation of the current class.
+ */
+fun TypeReference<*>.toJavaType(): JavaType {
     return PGDefaultMapperHolder.getMapper().constructType(this)
 }
