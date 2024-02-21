@@ -26,5 +26,20 @@ package io.github.breninsul.jdbctemplatepostgresqltypes.type
 
 import com.fasterxml.jackson.databind.ObjectMapper
 
+/**
+ * Represents a PostgreSQL JSON type.
+ *
+ * @property valueObject the value of the JSON type.
+ * @property specificMapper a specific object mapper that can be used for JSON serialization/deserialization.
+ */
+open class PGJson(valueObject: Any?, specificMapper: ObjectMapper? = null) : PGAbstractJson(valueObject, "json", specificMapper)
 
-open class PGJsonb(valueObject: Any?, specificMapper: ObjectMapper?=null) : PGAbstractJson(valueObject, "json",specificMapper)
+/**
+ * Extension function to convert any nullable value to a [PGJson] instance.
+ *
+ * @param specificMapper a specific object mapper that can be used for JSON serialization/deserialization.
+ * @return a [PGJson] instance.
+ */
+fun Any?.toPGJson(specificMapper: ObjectMapper? = null): PGJson {
+    return PGJson(this, specificMapper)
+}

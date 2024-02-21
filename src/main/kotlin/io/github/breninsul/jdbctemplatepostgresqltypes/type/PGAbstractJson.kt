@@ -24,14 +24,64 @@
 
 package io.github.breninsul.jdbctemplatepostgresqltypes.type
 
+import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.github.breninsul.jdbctemplatepostgresqltypes.configuration.PGDefaultMapperHolder
 
-
-abstract class PGJsonObject<T : Any>(valueObject: T?,pgTypeName:String, protected val specificMapper: ObjectMapper?) : PGAbstractObject<T?>(valueObject, pgTypeName) {
-    override fun mapValue(obj: T?): String? {
+/**
+ * Abstract class that handles type mapping between PostgreSQL and the corresponding Java objects.
+ *
+ * @property specificMapper The specific object mapper that is used for the JSON serialization and deserialization. If no mapper is specified, a default mapper is used.
+ */
+abstract class PGAbstractJson(valueObject: Any?, pgTypeName: String, protected val specificMapper: ObjectMapper? = null) :
+    PGAbstractObject<Any?>(valueObject, pgTypeName) {
+    /**
+     * Maps the value to a JSON string.
+     *
+     * @param obj Object to be mapped.
+     * @return The JSON string representation of the object.
+     */
+    override fun mapValue(obj: Any?): String? {
         return obj?.let { getMapper().writeValueAsString(it) }
     }
 
+    /**
+     * Converts the JSON string to a specified type of object.
+     *
+     * @param T The type that the JSON string is expected to be converted to.
+     * @param javaClass The class of T.
+     * @return The T type object converted from the JSON string.
+     */
+    fun <T : Any> toObject(javaClass: Class<T>): T? {
+        return toObject(getMapper().constructType(javaClass))
+    }
+
+    /**
+     * Converts the JSON string to a specified type of object.
+     *
+     * @param T The type that the JSON string is expected to be converted to.
+     * @param javaType The Java type of T.
+     * @return The T type object converted from the JSON string.
+     */
+    fun <T : Any> toObject(javaType: JavaType): T? {
+        return getValue()?.let { getMapper().readValue(it, javaType) }
+    }
+
+    /**
+     * Converts the JSON string to a specified type of object.
+     *
+     * @param T The type that the JSON string is expected to be converted to.
+     * @return The T type object converted from the JSON string.
+     */
+    inline fun <reified T : Any> toObject(): T? {
+        return toObject(T::class.java)
+    }
+
+    /**
+     * Returns the specific ObjectMapper if it exists. If it doesn't, return the default mapper.
+     *
+     * @return The specific or default ObjectMapper.
+     */
     protected open fun getMapper(): ObjectMapper {
         return specificMapper ?: PGDefaultMapperHolder.getMapper()
     }

@@ -26,10 +26,27 @@ package io.github.breninsul.jdbctemplatepostgresqltypes.type
 
 import org.postgresql.util.PGobject
 
-abstract class AbstractPG<T:Any?>(protected val valueObject:T, protected val pgTypeName:String): PGobject() {
+/**
+ * PGAbstractObject is an abstract base type for managing PostgreSQL complex types
+ *
+ * @param T the type of the value that the PGObject represents.
+ * @param valueObject the actual value of PostgreSQL object.
+ * @param pgTypeName the PostgreSQL type name.
+ *
+ * @property valueObject the actual value of PostgreSQL object.
+ * @property pgTypeName the PostgreSQL type name.
+ */
+abstract class PGAbstractObject<T : Any?>(protected val valueObject: T, protected val pgTypeName: String) : PGobject() {
     init {
-        type=pgTypeName
-        value=mapValue(valueObject)
+        type = pgTypeName
+        value = mapValue(valueObject)
     }
-    protected abstract fun mapValue(obj:T):String?
+
+    /**
+     * mapValue is a function to transform the valueObject of type T to a String format used in PostgreSQL.
+     *
+     * @param obj The object which is to be transformed to String
+     * @return the String representation of obj for PostgreSQL.
+     */
+    protected abstract fun mapValue(obj: T): String?
 }

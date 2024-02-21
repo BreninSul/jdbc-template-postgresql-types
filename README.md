@@ -1,38 +1,76 @@
-This is small lib for easy configuring Spring TransactionTemplate params for each execution such as 
-readOnly
-propagation
-isolation
-timeout
+This is small lib for integration PostgreSQL types like jsonb and enum with JdbcClient/Template.
+It provides easy way to map  jsonb/json/enum in parameter
+Also it's possible to create own types avoiding PGObject getter/setter methods
 
-Configure with properties
+Also it's provide easy way to map jsonb/json ResultSet to any object
 
-| Parameter                                             | Type                   | Description                                |
-|-------------------------------------------------------|------------------------|--------------------------------------------|
-| `spring.transaction.configurable.enabled`             | boolean                | Enable/disable autoconfig for this starter |
-| `spring.transaction.configurable.default.propagation` | TransactionPropagation | Enable/disable autoconfig for this starter |
-| `spring.transaction.configurable.default.isolation`   | TransactionIsolation   | Enable/disable autoconfig for this starter |
-| `spring.transaction.configurable.default.read-only`   | boolean                | Enable/disable autoconfig for this starter |
-| `spring.transaction.configurable.default.timeout`     | Duration               | Enable/disable autoconfig for this starter |
-
-
-Beans in Spring Boot will be automatically registered in ConfigurableTransactionAutoConfiguration with defined properties ConfigurableTransactionTemplateProperties (prefix synchronisation).
-
+`pgDefaultObjectMapper` bean is registered as default ObjectMapper from Spring Context, if it's not provided primary bean will be used.
+If there is no ObjectMapper bean in context or it's not Spring app,  `jacksonMapperBuilder().findAndAddModules().build()` will be used
 add the following dependency:
 
 ````kotlin
 dependencies {
 //Other dependencies
-    implementation("io.github.breninsul:configurable-transaction-template-starter:${version}")
+    implementation("jdbc-template-postgresql-types:${version}")
 //Other dependencies
 }
 
 ````
 # Example of usage
-
 ````kotlin
-val trxTemplate: ConfigurableTransactionTemplate
-trxTemplate.execute(readOnly = true) {
-    jdbcClient.sql("do read only sql")
+//Mapping JSON(b) parameter
+{
+    val paramJson = anyJacksonSerializebleObject.toPGJsonb()//toPGJsonb() is extension in PGJsonb class
+    jdbcClient.sql("insert into test_table(id,jsonb_column) values (1,:paramJson)")
+        .param("paramJson", paramJson)
         .update()
 }
+//Mapping JSON(b) parameter using PGJsonb constructor
+{
+    val paramJson = PGJsonb(anyJacksonSerializebleObject)
+    jdbcClient.sql("insert into test_table(id,jsonb_column) values (1,:paramJson)")
+        .param("paramJson", paramJson)
+        .update()
+}
+//Mapping Enum
+{
+    val paramEnum = TestEnum.ONE.toPGEnum("pg_enum_type")//replace pg_enum_type with your real PG custom enum type
+    //toPGEnum() is extension in PGEnum class
+    jdbcClient.sql("insert into test_table(id,enum_column) values (1,:paramEnum)")
+        .param("paramEnum", paramEnum)
+        .update()
+}
+
+//Mapping Enum using PGEnum constructor
+{
+    val paramEnum = PGEnum(TestEnum.ONE, "pg_enum_type")//replace pg_enum_type with your real PG custom enum type
+    jdbcClient.sql("insert into test_table(id,enum_column) values (1,:paramEnum)")
+        .param("paramEnum", paramEnum)
+        .update()
+}
+
+//One column row mapper
+{
+    val testJson = jdbcClient.sql("select jsonb_column from test_table where ... ")
+        //... params here
+        .query(JsonRowMapper(TestJson::class.java))
+        .single()
+    //testJson will be TestJson type with 
+}
+//Multi column row mapper (by names)
+{
+    val testJson = jdbcClient.sql("select jsonb_column_1,jsonb_column_2,int_column from test_table where ... ")
+        //... params here
+        .query((JsonRowMapper(listOf(JsonRow("jsonb_column_1",TestJson::class.java),JsonRow("jsonb_column_2",TestJson::class.java),JsonRow("int_column",Int::class.java,true))))
+        .single()
+    //testJson will be Map<String,TestJson/Int> type column name as key and value as value 
+    //Take attention that Int column is configured as rawSqlType so standard JDBC mechanism is used to map it
+}
+//Multi column row mapper (by column index)
+{
+    val testJson = jdbcClient.sql("select jsonb_column_1,jsonb_column_2,int_column from test_table where ... ")
+        //... params here
+        .query((JsonRowMapper(listOf(JsonRow(null,TestJson::class.java),JsonRow(null,TestJson::class.java),JsonRow("null,Int::class.java,true))))
+            .single()
+//testJson will be Map<Int,TestJson/Int> type column index as key and value as value 
 ````

@@ -22,17 +22,33 @@
  * SOFTWARE.
  */
 
-package io.github.breninsul.jdbctemplatepostgresqltypes.type
+package io.github.breninsul.jdbctemplatepostgresqltypes.configuration
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonMapperBuilder
 
+/**
+ * Object that holds the default object mapper for PG
+ */
 object PGDefaultMapperHolder {
-  private var  mapper :ObjectMapper = jacksonMapperBuilder().findAndAddModules().build()
+    /**
+     * Private object mapper initialized with default settings
+     */
+    private var mapper: ObjectMapper = jacksonMapperBuilder().findAndAddModules().build()
+
+    /**
+     * Getter for object mapper
+     * @return mapper the current object mapper
+     */
     fun getMapper(): ObjectMapper {
         return mapper
     }
-    fun PGDefaultMapperHolder.setMapper(newMapper:ObjectMapper){
-        mapper=newMapper
+
+    /**
+     * Setter for object mapper
+     * @param newMapper The new object mapper to be set
+     */
+    fun PGDefaultMapperHolder.setMapper(newMapper: ObjectMapper) {
+        mapper = newMapper
     }
 }

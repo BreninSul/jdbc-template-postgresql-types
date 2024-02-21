@@ -26,13 +26,21 @@ package io.github.breninsul.jdbctemplatepostgresqltypes.type
 
 import com.fasterxml.jackson.databind.ObjectMapper
 
+/**
+ * A class to handle JSON binary (jsonb) data type of PostgreSQL
+ *
+ * @property valueObject the underlying object to represent the JSON data.
+ * @property specificMapper the specific [ObjectMapper] to be used. If null, a new instance will be created.
+ */
+open class PGJsonb(valueObject: Any?, specificMapper: ObjectMapper? = null) : PGAbstractJson(valueObject, "jsonb", specificMapper)
 
-abstract class PGJsonObject<T : Any>(valueObject: T?,pgTypeName:String, protected val specificMapper: ObjectMapper?) : PGAbstractObject<T?>(valueObject, pgTypeName) {
-    override fun mapValue(obj: T?): String? {
-        return obj?.let { getMapper().writeValueAsString(it) }
-    }
-
-    protected open fun getMapper(): ObjectMapper {
-        return specificMapper ?: PGDefaultMapperHolder.getMapper()
-    }
+/**
+ * Extension function to convert any nullable object into a [PGJsonb].
+ *
+ * @receiver the object to be converted.
+ * @param specificMapper the specific [ObjectMapper] to be used. If null, a new instance will be created.
+ * @return the [PGJsonb] instance.
+ */
+fun Any?.toPGJsonb(specificMapper: ObjectMapper? = null): PGJsonb {
+    return PGJsonb(this, specificMapper)
 }

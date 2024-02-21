@@ -24,9 +24,41 @@
 
 package io.github.breninsul.jdbctemplatepostgresqltypes.type
 
-
-open class EnumPG( valueObject:Enum<*>?,  pgTypeName:String): AbstractPG<Enum<*>?>(valueObject,pgTypeName) {
-    override fun mapValue(obj:Enum<*>?):String? {
+/**
+ * A class that represents a PostgreSQL enumeration as an object in Java.
+ *
+ * @property valueObject The enumerated object's value.
+ * @property pgTypeName The name of the PostgreSQL enumeration type.
+ * @constructor Creates a new instance of [PGEnum].
+ */
+open class PGEnum(valueObject: Enum<*>?, pgTypeName: String) : PGAbstractObject<Enum<*>?>(valueObject, pgTypeName) {
+    /**
+     * Maps an enumerated object to a string.
+     *
+     * @param obj The enumerated object.
+     * @return The string representation of the enumerated object's value.
+     */
+    override fun mapValue(obj: Enum<*>?): String? {
         return obj?.name
     }
+
+    /**
+     * Converts this [PGEnum] instance into an enumerated object of a specific enum class.
+     *
+     * @return The enumerated object of the given enum class that matches this [PGEnum] instance's value, or `null`
+     * if no such enumerated object exists.
+     */
+    inline fun <reified T : Enum<T>> toEnum(): T? {
+        return T::class.java.enumConstants.firstOrNull { it.name.equals(getValue(), true) }
+    }
+}
+
+/**
+ * Converts an optional enumerated object into a [PGEnum] instance.
+ *
+ * @property pgTypeName The name of the PostgreSQL enumeration type.
+ * @return A [PGEnum] instance representing the optional enumerated object.
+ */
+fun Enum<*>?.toPGEnum(pgTypeName: String): PGEnum {
+    return PGEnum(this, pgTypeName)
 }

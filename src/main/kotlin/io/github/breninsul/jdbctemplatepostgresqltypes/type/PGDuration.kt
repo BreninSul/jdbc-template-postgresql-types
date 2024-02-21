@@ -24,9 +24,32 @@
 
 package io.github.breninsul.jdbctemplatepostgresqltypes.type
 
+import java.time.Duration
 
-open class PGEnum(valueObject:Enum<*>?, pgTypeName:String): PGAbstractObject<Enum<*>?>(valueObject,pgTypeName) {
-    override fun mapValue(obj:Enum<*>?):String? {
-        return obj?.name
+/**
+ * This class represents a PostgreSQL interval type.
+ *
+ * @property valueObject The Duration object represented as a PostgreSQL interval.
+ */
+open class PGDuration(valueObject: Duration?) : PGAbstractObject<Duration?>(valueObject, "interval") {
+    /**
+     * This method maps a Duration object to a string representation suitable for PostgreSQL.
+     * The duration is mapped to a string in millis.
+     *
+     * @param obj The Duration object to map.
+     * @return The string representation of the duration in millis or null if the Duration object is null.
+     */
+    override fun mapValue(obj: Duration?): String? {
+        return obj?.toMillis()?.let { "${it}ms" }
     }
+}
+
+/**
+ * Extension function to map a nullable Duration object to a PGDuration object.
+ *
+ * @receiver The nullable Duration object.
+ * @return The PGDuration object.
+ */
+fun Duration?.PGDuration(): PGDuration {
+    return PGDuration(this)
 }

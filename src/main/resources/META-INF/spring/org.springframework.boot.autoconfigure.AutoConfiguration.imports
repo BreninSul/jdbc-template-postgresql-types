@@ -1,1 +1,1 @@
-io.github.breninsul.configurabletransactiontemplatestarter.config.ConfigurableTransactionAutoConfiguration
+io.github.breninsul.jdbctemplatepostgresqltypes.configuration.JdbcTypesDefaultMapperHolderAutoConfiguration
