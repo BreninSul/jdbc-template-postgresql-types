@@ -24,20 +24,15 @@
 
 package io.github.breninsul.jdbctemplatepostgresqltypes.type
 
-import java.util.UUID
-
-
-open class PGUuid(valueObject: UUID?) : PGAbstractObject<UUID?>(valueObject, "uuid") {
-    override fun mapValue(obj: UUID?): String? {
-        return obj?.toString()
+open class PGLong(valueObject: Long?) : PGAbstractObject<Long?>(valueObject, "bigint") {
+    override fun mapValue(obj: Long?): String? {
+        return obj?.toString(10)
     }
 }
 
 
-fun UUID?.toPGUuid(): PGUuid {
-    return PGUuid(this)
+fun Long?.toPGLong(): PGLong {
+    return PGLong(this)
 }
 
-fun String?.toPGUuid(): PGUuid {
-    return PGUuid(this?.let { UUID.fromString(it)})
-}
+

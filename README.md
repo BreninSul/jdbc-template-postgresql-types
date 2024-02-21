@@ -1,7 +1,16 @@
 This is small lib for integration PostgreSQL types like jsonb and enum with JdbcClient/Template.
 It provides easy way to map  jsonb/json/enum in parameter
 Also it's possible to create own types avoiding PGObject getter/setter methods
-
+Full implemented list is in package `io.github.breninsul.jdbctemplatepostgresqltypes.type`
+ - PGBigDecimal.kt
+ - PGBigInteger.kt
+ - PGDuration.kt
+ - PGEnum.kt
+ - PGInt.kt
+ - PGJson.kt
+ - PGJsonb.kt
+ - PGLong.kt
+ - PGUuid.kt
 Also it's provide easy way to map jsonb/json ResultSet to any object
 
 `pgDefaultObjectMapper` bean is registered as default ObjectMapper from Spring Context, if it's not provided primary bean will be used.

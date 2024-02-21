@@ -24,20 +24,18 @@
 
 package io.github.breninsul.jdbctemplatepostgresqltypes.type
 
-import java.util.UUID
+import java.math.BigDecimal
 
 
-open class PGUuid(valueObject: UUID?) : PGAbstractObject<UUID?>(valueObject, "uuid") {
-    override fun mapValue(obj: UUID?): String? {
-        return obj?.toString()
+open class PGBigDecimal(valueObject: BigDecimal?) : PGAbstractObject<BigDecimal?>(valueObject, "numeric") {
+    override fun mapValue(obj: BigDecimal?): String? {
+        return obj?.toPlainString()
     }
 }
 
 
-fun UUID?.toPGUuid(): PGUuid {
-    return PGUuid(this)
+fun BigDecimal?.toPGBigDecimal(): PGBigDecimal {
+    return PGBigDecimal(this)
 }
 
-fun String?.toPGUuid(): PGUuid {
-    return PGUuid(this?.let { UUID.fromString(it)})
-}
+
