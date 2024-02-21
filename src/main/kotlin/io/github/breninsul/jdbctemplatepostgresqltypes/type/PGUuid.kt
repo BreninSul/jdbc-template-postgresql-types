@@ -27,17 +27,38 @@ package io.github.breninsul.jdbctemplatepostgresqltypes.type
 import java.util.UUID
 
 
+/**
+ * Custom class for handling UUID type in PostgreSQL.
+ *
+ * @property valueObject The UUID to be handled.
+ */
 open class PGUuid(valueObject: UUID?) : PGAbstractObject<UUID?>(valueObject, "uuid") {
+
+    /**
+     * Maps the UUID value to a String value.
+     *
+     * @param obj The UUID object.
+     * @return The string representation of the UUID.
+     */
     override fun mapValue(obj: UUID?): String? {
         return obj?.toString()
     }
 }
 
-
+/**
+ * Converts a nullable UUID to a PGUuid object.
+ *
+ * @return The PGUuid representation of the UUID.
+ */
 fun UUID?.toPGUuid(): PGUuid {
     return PGUuid(this)
 }
 
+/**
+ * Converts a nullable String to a PGUuid object.
+ *
+ * @return The PGUuid representation of the UUID.
+ */
 fun String?.toPGUuid(): PGUuid {
     return PGUuid(this?.let { UUID.fromString(it)})
 }

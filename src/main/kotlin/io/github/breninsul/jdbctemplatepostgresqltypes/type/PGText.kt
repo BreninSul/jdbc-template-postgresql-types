@@ -25,31 +25,29 @@
 package io.github.breninsul.jdbctemplatepostgresqltypes.type
 
 /**
- * A class representing a PostgreSQL integer type with encapsulation of nullable Kotlin Integer.
- * Extends PGAbstractObject to handle nullable Integer type specifically for PostgreSQL usage.
+ * Class representing the PostgreSQL `text` type.
  *
- * @property valueObject The nullable integer value to represent in PostgreSQL.
- * @constructor Creates a [PGInt] instance encapsulating the given value.
+ * @property valueObject The value of this PostgreSQL `text` object.
  */
-open class PGInt(valueObject: Int?) : PGAbstractObject<Int?>(valueObject, "int") {
+open class PGText(valueObject: String?) : PGAbstractObject<String?>(valueObject, "text") {
 
     /**
-     * Transform the nullable integer to a string representation.
-     * Returns null if the value is null, else returns the string of the integer value.
+     * Maps the value to its appropriate type.
      *
-     * @return The string representation of the integer value.
+     * @param obj The value to map.
+     * @return The mapped value.
      */
-    override fun mapValue(obj: Int?): String? {
-        return obj?.toString(10)
+    override fun mapValue(obj: String?): String? {
+        return obj
     }
 }
 
 /**
- * Extension function to transform a nullable Integer to a [PGInt] instance.
+ * Function to convert a nullable string to a `PGText`.
  *
- * @receiver The nullable integer.
- * @return The resulting transformed [PGInt] instance.
+ * @receiver The nullable string to convert.
+ * @return The converted `PGText`.
  */
-fun Int?.toPGInt(): PGInt {
-    return PGInt(this)
+fun String?.toPGText(): PGText {
+    return PGText(this)
 }

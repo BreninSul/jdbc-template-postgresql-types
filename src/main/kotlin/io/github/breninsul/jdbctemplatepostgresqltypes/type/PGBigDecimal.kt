@@ -1,41 +1,26 @@
-/*
- * MIT License
- *
- * Copyright (c) 2024 BreninSul
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 package io.github.breninsul.jdbctemplatepostgresqltypes.type
 
 import java.math.BigDecimal
 
-
+/**
+ * Defines a class that represents a BigDecimal type that is specifically formatted for PostgreSQL databases.
+ * @property valueObject The BigDecimal object that this class wraps around.
+ */
 open class PGBigDecimal(valueObject: BigDecimal?) : PGAbstractObject<BigDecimal?>(valueObject, "numeric") {
+    /**
+     * Returns the plain string representation of the BigDecimal.
+     * @param obj The BigDecimal object to be converted to a string.
+     * @return The plain string representation of the BigDecimal, or null if the provided BigDecimal is null.
+     */
     override fun mapValue(obj: BigDecimal?): String? {
         return obj?.toPlainString()
     }
 }
 
-
+/**
+ * Extension function to the BigDecimal class. It converts the BigDecimal to a PGBigDecimal.
+ * @return A PGBigDecimal object with the same numerical value.
+ */
 fun BigDecimal?.toPGBigDecimal(): PGBigDecimal {
     return PGBigDecimal(this)
 }
-
-

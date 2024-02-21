@@ -24,15 +24,27 @@
 
 package io.github.breninsul.jdbctemplatepostgresqltypes.type
 
+/**
+ * A class that represents the PostgreSQL `bigint` type.
+ * @property valueObject A nullable Long value that is the object of this type.
+ * @constructor Creates an instance of PGLong.
+ */
 open class PGLong(valueObject: Long?) : PGAbstractObject<Long?>(valueObject, "bigint") {
+    /**
+     * Maps the given Long object to its string representation.
+     * @param obj A nullable Long object.
+     * @return A nullable string representation of obj.
+     */
     override fun mapValue(obj: Long?): String? {
         return obj?.toString(10)
     }
 }
 
-
+/**
+ * Extension function to convert a Long object to PGLong.
+ * @receiver A nullable Long.
+ * @return An instance of PGLong with the receiver as its value object.
+ */
 fun Long?.toPGLong(): PGLong {
     return PGLong(this)
 }
-
-

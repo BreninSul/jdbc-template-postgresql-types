@@ -26,16 +26,28 @@ package io.github.breninsul.jdbctemplatepostgresqltypes.type
 
 import java.math.BigInteger
 
-
+/**
+ * Class representing PostgreSQL's BigInteger type for use in JDBC operations.
+ *
+ * @property valueObject The BigInteger value stored in the database.
+ * @constructor Creates a new PGBigInteger object.
+ */
 open class PGBigInteger(valueObject: BigInteger?) : PGAbstractObject<BigInteger?>(valueObject, "numeric") {
+    /**
+     * Map the BigInteger value to a String
+     * @param obj BigInteger? to be mapped.
+     * @return A String representation of the BigInteger value.
+     */
     override fun mapValue(obj: BigInteger?): String? {
         return obj?.toString(10)
     }
 }
 
-
+/**
+ * Extension function to convert a BigInteger? to a PGBigInteger.
+ *
+ * @return A new PGBigInteger instance.
+ */
 fun BigInteger?.toPGBigInteger(): PGBigInteger {
     return PGBigInteger(this)
 }
-
-
