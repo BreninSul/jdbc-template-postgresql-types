@@ -64,7 +64,7 @@ class TypesTests {
         val tstNull = PGJson(null)
         val updated =
             jdbcClient.sql("insert into test_json(id,tst) values (1,:tst)")
-                .param("tst", tst)
+                .param("tst", TestJson("t1", "t2").toPGJsonb())
                 .update()
         Assertions.assertEquals(1, updated)
         val nullUpdated =
@@ -88,9 +88,10 @@ class TypesTests {
                 .param("tst", TestEnum.ONE.toPGEnum("tst_enum"))
                 .update()
         Assertions.assertEquals(1, updated)
+        val nullEnum:TestEnum? = null
         val nullUpdated =
             jdbcClient.sql("insert into test_en(id,tst) values (2,:tst)")
-                .param("tst", tstNull)
+                .param("tst", nullEnum.toPGEnum("tst_enum"))
                 .update()
         Assertions.assertEquals(1, nullUpdated)
 
