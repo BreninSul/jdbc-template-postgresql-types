@@ -31,8 +31,9 @@ import org.postgresql.util.PGobject
  *
  * @param T the type parameter, T should be of PGobject class
  * @param valueObject the list of valueObject of type T
+ * @param typeName is PostgreSQL raw type name ([] will be added automatically). Set it if valueObject is null or empty
  */
-open class PGArray<T : PGobject>(valueObject: List<T>?) : PGAbstractObject<List<T>?>(valueObject, "${valueObject!!.first().type}[]") {
+open class PGArray<T : PGobject>(valueObject: List<T>?,typeName:String?=null) : PGAbstractObject<List<T>?>(valueObject, "${(valueObject?.first()?.type?:typeName)!!}[]") {
 
     /**
      * Map the list of 'T' objects to string
@@ -77,5 +78,5 @@ fun <T:PGobject> List<T>?.toPGArray(): PGArray<T> {
  * @return PGArray of PGText
  */
 fun  List<String>?.toPGTextArray(): PGArray<PGText> {
-    return PGArray(this?.map { it.toPGText() })
+    return PGArray(this?.map { it.toPGText() },"text")
 }

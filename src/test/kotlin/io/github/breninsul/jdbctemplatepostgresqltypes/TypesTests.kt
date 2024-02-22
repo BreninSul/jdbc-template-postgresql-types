@@ -73,7 +73,30 @@ class TypesTests {
                 .update()
         Assertions.assertEquals(1, nullUpdated)
     }
+    @Test
+    fun testArray() {
+        jdbcClient.sql("create table test_text_array(id int,tst text[])")
+            .update()
+        val tst = listOf("One","Second")
+        val updated =
+            jdbcClient.sql("insert into test_text_array(id,tst) values (1,:tst)")
+                .param("tst", tst.toPGTextArray())
+                .update()
+        Assertions.assertEquals(1, updated)
+        val selectedId =
+            jdbcClient.sql("select id from test_text_array where tst=:tst")
+                .param("tst", tst.toPGTextArray())
+                .query(Int::class.java)
+                .single()
+        Assertions.assertEquals(1, selectedId)
+        val selected =
+            jdbcClient.sql("select to_jsonb(tst) from test_text_array where tst=:tst")
+                .param("tst", tst.toPGTextArray())
+                .query(String::class.java)
+                .single()
+        Assertions.assertEquals("[\"One\", \"Second\"]", selected)
 
+    }
     enum class TestEnum { ONE, TWO }
 
     @Test
