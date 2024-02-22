@@ -11,6 +11,8 @@ Full implemented list is in package `io.github.breninsul.jdbctemplatepostgresqlt
  - PGJsonb.kt
  - PGLong.kt
  - PGUuid.kt
+ - PGBoolean.kt
+ - PGArray.kt
 Also it's provide easy way to map jsonb/json ResultSet to any object
 
 `pgDefaultObjectMapper` bean is registered as default ObjectMapper from Spring Context, if it's not provided primary bean will be used.
