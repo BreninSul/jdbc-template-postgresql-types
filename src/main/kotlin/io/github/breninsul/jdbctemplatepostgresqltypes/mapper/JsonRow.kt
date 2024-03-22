@@ -44,7 +44,6 @@ open class JsonRow(val name: String? = null, val javaType: JavaType, val rawSqlT
     constructor(name: String? = null, javaClass: Class<*>, rawSqlType: Boolean = false) : this(name, javaClass.toJavaType(), rawSqlType)
 
     constructor(name: String? = null, typeRef: TypeReference<*>, rawSqlType: Boolean = false) : this(name, typeRef.toJavaType(), rawSqlType)
-
 }
 
 /**
@@ -55,6 +54,7 @@ open class JsonRow(val name: String? = null, val javaType: JavaType, val rawSqlT
 fun Class<*>.toJavaType(): JavaType {
     return PGDefaultMapperHolder.getMapper().constructType(this)
 }
+
 /**
  * Extension function to convert a TypeReference instance to its corresponding JavaType representation.
  *

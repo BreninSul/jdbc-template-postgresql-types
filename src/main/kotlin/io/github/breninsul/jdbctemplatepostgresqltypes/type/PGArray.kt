@@ -33,8 +33,7 @@ import org.postgresql.util.PGobject
  * @param valueObject the list of valueObject of type T
  * @param typeName is PostgreSQL raw type name ([] will be added automatically). Set it if valueObject is null or empty
  */
-open class PGArray<T : PGobject>(valueObject: List<T>?,typeName:String?=null) : PGAbstractObject<List<T>?>(valueObject, "${(valueObject?.first()?.type?:typeName)!!}[]") {
-
+open class PGArray<T : PGobject>(valueObject: List<T>?, typeName: String? = null) : PGAbstractObject<List<T>?>(valueObject, "${(valueObject?.first()?.type ?: typeName)!!}[]") {
     /**
      * Map the list of 'T' objects to string
      *
@@ -42,8 +41,11 @@ open class PGArray<T : PGobject>(valueObject: List<T>?,typeName:String?=null) : 
      * @return list of 'T' objects as string
      */
     override fun mapValue(obj: List<T>?): String? {
+        if (obj==null){
+            return null
+        }
         val stringList = obj?.map { mapStringElement(it.value) }?.joinToString(",")
-        return "{${stringList}}"
+        return "{$stringList}"
     }
 
     /**
@@ -68,15 +70,22 @@ open class PGArray<T : PGobject>(valueObject: List<T>?,typeName:String?=null) : 
  *
  * @return PGArray of type 'T'
  */
-fun <T:PGobject> List<T>?.toPGArray(): PGArray<T> {
+fun <T : PGobject> List<T>.toPGArray(): PGArray<T> {
     return PGArray(this)
 }
-
+/**
+ * Extension function to convert nullable list of 'T' to PGArray
+ *
+ * @return PGArray of type 'T'
+ */
+fun <T : PGobject> List<T>?.toPGArray(type:String): PGArray<T> {
+    return PGArray(this,type)
+}
 /**
  * Extension function to convert list of String to PGArray
  *
  * @return PGArray of PGText
  */
-fun  List<String>?.toPGTextArray(): PGArray<PGText> {
-    return PGArray(this?.map { it.toPGText() },"text")
+fun List<String>?.toPGTextArray(): PGArray<PGText> {
+    return PGArray(this?.map { it.toPGText() }, "text")
 }

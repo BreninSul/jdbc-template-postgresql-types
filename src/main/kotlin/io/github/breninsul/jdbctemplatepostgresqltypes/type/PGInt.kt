@@ -32,7 +32,6 @@ package io.github.breninsul.jdbctemplatepostgresqltypes.type
  * @constructor Creates a [PGInt] instance encapsulating the given value.
  */
 open class PGInt(valueObject: Int?) : PGAbstractObject<Int?>(valueObject, "int") {
-
     /**
      * Transform the nullable integer to a string representation.
      * Returns null if the value is null, else returns the string of the integer value.

@@ -46,10 +46,12 @@ open class JsonRowMapper<T : Any>(protected val types: List<JsonRow>, protected 
      * Secondary Constructor with a single JsonRow
      */
     constructor(row: JsonRow, specificMapper: ObjectMapper? = null) : this(listOf(row), specificMapper, true)
+
     /**
      * Secondary constructor with a TypeReference type of the row
      */
     constructor(typeRef: TypeReference<T>, specificMapper: ObjectMapper? = null) : this(JsonRow(null, typeRef), specificMapper)
+
     /**
      * Secondary constructor with a JavaType type of the row
      */
@@ -59,6 +61,7 @@ open class JsonRowMapper<T : Any>(protected val types: List<JsonRow>, protected 
      * Secondary constructor with a class type of the row
      */
     constructor(javaClass: Class<T>, specificMapper: ObjectMapper? = null) : this(JsonRow(null, javaClass), specificMapper)
+
     /**
      * Secondary constructor with a KClass type of the row
      */
@@ -150,17 +153,19 @@ open class JsonRowMapper<T : Any>(protected val types: List<JsonRow>, protected 
      */
     protected open fun getMapper() = specificMapper ?: PGDefaultMapperHolder.getMapper()
 }
-fun <T:Any>  Class<T>.toRowMapper(specificMapper: ObjectMapper? = null):JsonRowMapper<T>{
-    return JsonRowMapper(this,specificMapper)
-}
-fun <T:Any>  KClass<T>.toRowMapper(specificMapper: ObjectMapper? = null):JsonRowMapper<T>{
-    return JsonRowMapper(this,specificMapper)
+
+fun <T : Any> Class<T>.toRowMapper(specificMapper: ObjectMapper? = null): JsonRowMapper<T>  {
+    return JsonRowMapper(this, specificMapper)
 }
 
-fun <T:Any>  JavaType.toRowMapper(specificMapper: ObjectMapper? = null):JsonRowMapper<T>{
-    return JsonRowMapper<T>(this,specificMapper)
+fun <T : Any> KClass<T>.toRowMapper(specificMapper: ObjectMapper? = null): JsonRowMapper<T>  {
+    return JsonRowMapper(this, specificMapper)
 }
 
-fun <T:Any> TypeReference<T>.toRowMapper(specificMapper: ObjectMapper? = null):JsonRowMapper<T>{
-    return JsonRowMapper<T>(this,specificMapper)
+fun <T : Any> JavaType.toRowMapper(specificMapper: ObjectMapper? = null): JsonRowMapper<T>  {
+    return JsonRowMapper<T>(this, specificMapper)
+}
+
+fun <T : Any> TypeReference<T>.toRowMapper(specificMapper: ObjectMapper? = null): JsonRowMapper<T>  {
+    return JsonRowMapper<T>(this, specificMapper)
 }

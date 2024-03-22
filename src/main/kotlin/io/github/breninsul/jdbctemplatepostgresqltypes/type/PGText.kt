@@ -30,7 +30,6 @@ package io.github.breninsul.jdbctemplatepostgresqltypes.type
  * @property valueObject The value of this PostgreSQL `text` object.
  */
 open class PGText(valueObject: String?) : PGAbstractObject<String?>(valueObject, "text") {
-
     /**
      * Maps the value to its appropriate type.
      *
