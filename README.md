@@ -4,7 +4,6 @@ Also it's possible to create own types avoiding PGObject getter/setter methods
 Full implemented list is in package `io.github.breninsul.jdbctemplatepostgresqltypes.type`
  - PGBigDecimal.kt
  - PGBigInteger.kt
- - PGDuration.kt
  - PGEnum.kt
  - PGInt.kt
  - PGJson.kt
@@ -12,7 +11,14 @@ Full implemented list is in package `io.github.breninsul.jdbctemplatepostgresqlt
  - PGLong.kt
  - PGUuid.kt
  - PGBoolean.kt
- - PGArray.kt
+ - PGArray.kt 
+ - PGDuration.kt
+ - PGDuration.kt
+ - PGZonedDateTime.kt
+ - PGLocalTime.kt
+ - PGLocalDateTime.kt
+ - PGLocalDateRange.kt
+ - PGLocalDate.kt
 Also it's provide easy way to map jsonb/json ResultSet to any object
 
 `pgDefaultObjectMapper` bean is registered as default ObjectMapper from Spring Context, if it's not provided primary bean will be used.

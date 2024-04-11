@@ -22,9 +22,11 @@
  * SOFTWARE.
  */
 
-package io.github.breninsul.jdbctemplatepostgresqltypes.type
+package io.github.breninsul.jdbctemplatepostgresqltypes.type.date
 
+import io.github.breninsul.jdbctemplatepostgresqltypes.type.PGAbstractObject
 import java.time.Duration
+import java.time.Period
 
 /**
  * This class represents a PostgreSQL interval type.
@@ -50,6 +52,16 @@ open class PGDuration(valueObject: Duration?) : PGAbstractObject<Duration?>(valu
  * @receiver The nullable Duration object.
  * @return The PGDuration object.
  */
-fun Duration?.PGDuration(): PGDuration {
+fun Duration?.toPGDuration(): PGDuration {
     return PGDuration(this)
+}
+
+/**
+ * Converts a nullable Period object to a PGDuration object.
+ *
+ * @receiver The nullable Period object.
+ * @return The converted PGDuration object.
+ */
+fun Period?.toPGDuration(): PGDuration {
+    return PGDuration(this?.let { Duration.from(it) })
 }
