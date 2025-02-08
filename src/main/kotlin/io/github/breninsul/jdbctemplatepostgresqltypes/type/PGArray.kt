@@ -56,11 +56,11 @@ open class PGArray<T : PGobject>(valueObject: List<T>?, typeName: String? = null
      */
     private fun mapStringElement(value: String?): String {
         if (value.equals("null", true)) {
-            return "\"null\""
+            return "\"$value\""
         } else if (value == null) {
             return "null"
         } else {
-            return "\"${value}\""
+            return "\"${value.replace("\"", "\\\"")}\""
         }
     }
 }

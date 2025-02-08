@@ -28,7 +28,7 @@ add the following dependency:
 ````kotlin
 dependencies {
 //Other dependencies
-    implementation("jdbc-template-postgresql-types:${version}")
+    implementation("jdbc-template-postgresql-types:1.0.9")
 //Other dependencies
 }
 
