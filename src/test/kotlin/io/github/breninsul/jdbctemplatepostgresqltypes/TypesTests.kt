@@ -78,7 +78,7 @@ class TypesTests {
     fun testArray() {
         jdbcClient.sql("create table test_text_array(id int,tst text[])")
             .update()
-        val tst = listOf("One", "Second")
+        val tst = listOf("On\"e", "Second")
         val updated =
             jdbcClient.sql("insert into test_text_array(id,tst) values (1,:tst)")
                 .param("tst", tst.toPGTextArray())
@@ -95,7 +95,7 @@ class TypesTests {
                 .param("tst", tst.toPGTextArray())
                 .query(String::class.java)
                 .single()
-        Assertions.assertEquals("[\"One\", \"Second\"]", selected)
+        Assertions.assertEquals("[\"On\\\"e\", \"Second\"]", selected)
     }
 
     enum class TestEnum { ONE, TWO }

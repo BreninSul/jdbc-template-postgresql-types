@@ -33,7 +33,7 @@ import org.postgresql.util.PGobject
  * @param valueObject the list of valueObject of type T
  * @param typeName is PostgreSQL raw type name ([] will be added automatically). Set it if valueObject is null or empty
  */
-open class PGArray<T : PGobject>(valueObject: List<T>?, typeName: String? = null) : PGAbstractObject<List<T>?>(valueObject, "${(valueObject?.first()?.type ?: typeName)!!}[]") {
+open class PGArray<T : PGobject>(valueObject: List<T>?, typeName: String? = null) : PGAbstractObject<List<T>?>(valueObject, "${(typeName?:valueObject?.first()?.type)!!}[]") {
     /**
      * Map the list of 'T' objects to string
      *
@@ -55,12 +55,13 @@ open class PGArray<T : PGobject>(valueObject: List<T>?, typeName: String? = null
      * @return mapped string
      */
     private fun mapStringElement(value: String?): String {
-        if (value.equals("null", true)) {
-            return "\"$value\""
+        return if (value.equals("null", true)) {
+            "\"$value\""
         } else if (value == null) {
-            return "null"
+            "null"
         } else {
-            return "\"${value.replace("\"", "\\\"")}\""
+            val replace = value.replace("\"", "\\\"")
+            "\"$replace\""
         }
     }
 }
