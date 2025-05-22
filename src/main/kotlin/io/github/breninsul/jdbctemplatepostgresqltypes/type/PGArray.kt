@@ -25,6 +25,7 @@
 package io.github.breninsul.jdbctemplatepostgresqltypes.type
 
 import org.postgresql.util.PGobject
+import java.util.LinkedList
 
 /**
  * Class to handle the operations of PostgreSQL array.
@@ -47,7 +48,6 @@ open class PGArray<T : PGobject>(valueObject: List<T>?, typeName: String? = null
         val stringList = obj?.map { mapStringElement(it.value) }?.joinToString(",")
         return "{$stringList}"
     }
-
     /**
      * Map a string element
      *
@@ -55,6 +55,12 @@ open class PGArray<T : PGobject>(valueObject: List<T>?, typeName: String? = null
      * @return mapped string
      */
     private fun mapStringElement(value: String?): String {
+        val textTypes=listOf("text","varchar","bpchar","char","citext")
+
+        val filter = textTypes.filter { pgTypeName.startsWith(it, true) }
+        if (!filter.any()) {
+            return value ?: "null"
+        }
         return if (value.equals("null", true)) {
             "\"$value\""
         } else if (value == null) {

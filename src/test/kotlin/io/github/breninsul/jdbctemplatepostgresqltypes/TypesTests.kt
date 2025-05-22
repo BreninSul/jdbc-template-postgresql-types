@@ -98,6 +98,46 @@ class TypesTests {
         Assertions.assertEquals("[\"On\\\"e\", \"Second\"]", selected)
     }
 
+    @Test
+    fun testJsonbArray() {
+        // Create a list of JSON strings
+        val jsonString1 = "{\"name\":\"mainFieldType\",\"value\":\"Description\"}"
+        val jsonString2 = "{\"name\":\"text\",\"value\":\"<table>    <tr>        <td>            <h2>Microsoft Xbox Series X</h2>            <p>Some text with \\\"quotes\\\" and \\\\backslashes\\\\</p>        </td>    </tr></table>\"}"
+        val jsonString3 = "{\"name\":\"fields\",\"value\":\"\"}"
+
+        // Create PGJsonb objects from the strings
+        val pgJsonb1 = PGJsonb(jsonString1)
+        val pgJsonb2 = PGJsonb(jsonString2)
+        val pgJsonb3 = PGJsonb(jsonString3)
+
+        // Create a list of PGJsonb objects
+        val jsonbList = listOf(pgJsonb1, pgJsonb2, pgJsonb3)
+
+        // Create a PGArray of PGJsonb objects
+        val pgArray = PGArray(jsonbList, "jsonb")
+        jdbcClient.sql("create table test_text_array(id int,tst jsonb[])")
+            .update()
+        val updated =
+            jdbcClient.sql("insert into test_text_array(id,tst) values (1,:tst)")
+                .param("tst", pgArray)
+                .update()
+        Assertions.assertEquals(1, updated)
+        val selectedId =
+            jdbcClient.sql("select id from test_text_array where tst=:tst")
+                .param("tst", pgArray)
+                .query(Int::class.java)
+                .single()
+        Assertions.assertEquals(1, selectedId)
+        val selected =
+            jdbcClient.sql("select to_jsonb(tst) from test_text_array where tst=:tst")
+                .param("tst", pgArray)
+                .query(String::class.java)
+                .single()
+        Assertions.assertEquals("[{\"name\": \"mainFieldType\", \"value\": \"Description\"}, {\"name\": \"text\", \"value\": \"<table>    <tr>        <td>            <h2>Microsoft Xbox Series X</h2>            <p>Some text with \\\"quotes\\\" and \\\\backslashes\\\\</p>        </td>    </tr></table>\"}, {\"name\": \"fields\", \"value\": \"\"}]", selected)
+    }
+
+
+
     enum class TestEnum { ONE, TWO }
 
     @Test
