@@ -1,10 +1,11 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    val kotlinVersion = "2.0.0"
-    val springBootVersion = "3.4.2"
+    val kotlinVersion = "2.2.0"
+    val springBootVersion = "3.5.4"
     id("java")
-    id("net.thebugmc.gradle.sonatype-central-portal-publisher") version "1.2.3"
+    id("net.thebugmc.gradle.sonatype-central-portal-publisher") version "1.2.4"
     id("org.springframework.boot") version springBootVersion
     id("io.spring.dependency-management") version "1.1.5"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
@@ -12,12 +13,12 @@ plugins {
     id("org.jetbrains.kotlin.kapt") version kotlinVersion
     id("org.jetbrains.dokka") version "1.9.20"
 }
-val springBootVersion = "3.4.2"
-val kotlinVersion = "2.0.0"
+val springBootVersion = "3.5.4"
+val kotlinVersion = "2.2.0"
 val javaVersion = JavaVersion.VERSION_17
 
 group = "io.github.breninsul"
-version = "1.0.12"
+version = "1.0.14"
 
 java {
     sourceCompatibility = javaVersion
@@ -53,9 +54,9 @@ dependencies {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs += "-Xjsr305=strict"
-        jvmTarget = javaVersion.majorVersion
+    compilerOptions {
+        freeCompilerArgs.add("-Xjsr305=strict")
+        jvmTarget.set(JvmTarget.fromTarget(javaVersion.majorVersion))
     }
 }
 

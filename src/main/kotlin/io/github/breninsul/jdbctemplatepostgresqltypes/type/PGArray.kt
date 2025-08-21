@@ -27,14 +27,17 @@ package io.github.breninsul.jdbctemplatepostgresqltypes.type
 import org.postgresql.util.PGobject
 import java.util.LinkedList
 
+private const val QUOTE = """""""
+
 /**
  * Class to handle the operations of PostgreSQL array.
  *
  * @param T the type parameter, T should be of PGobject class
  * @param valueObject the list of valueObject of type T
- * @param typeName is PostgreSQL raw type name ([] will be added automatically). Set it if valueObject is null or empty
+ * @param typeName is PostgreSQL raw type name ([] will be added
+ *    automatically). Set it if valueObject is null or empty
  */
-open class PGArray<T : PGobject>(valueObject: List<T>?, typeName: String? = null) : PGAbstractObject<List<T>?>(valueObject, "${(typeName?:valueObject?.first()?.type)!!}[]") {
+open class PGArray<T : PGobject>(valueObject: List<T>?, typeName: String? = null) : PGAbstractObject<List<T>?>(valueObject, "${(typeName ?: valueObject?.first()?.type)!!}[]") {
     /**
      * Map the list of 'T' objects to string
      *
@@ -42,12 +45,13 @@ open class PGArray<T : PGobject>(valueObject: List<T>?, typeName: String? = null
      * @return list of 'T' objects as string
      */
     override fun mapValue(obj: List<T>?): String? {
-        if (obj==null){
+        if (obj == null) {
             return null
         }
         val stringList = obj?.map { mapStringElement(it.value) }?.joinToString(",")
         return "{$stringList}"
     }
+
     /**
      * Map a string element
      *
@@ -55,20 +59,27 @@ open class PGArray<T : PGobject>(valueObject: List<T>?, typeName: String? = null
      * @return mapped string
      */
     private fun mapStringElement(value: String?): String {
-        val textTypes=listOf("text","varchar","bpchar","char","citext")
+//        val jsonTypes = listOf("json", "jsonb", "hstore")
+//        val textTypes = listOf("text", "varchar", "bpchar", "char", "citext")
+//
+//        val textMatch = (textTypes).any { pgTypeName.startsWith(it, true) }
+//        val jsonMatch = (jsonTypes).any { pgTypeName.startsWith(it, true) }
+//
+//        if (textMatch ||jsonMatch) {
+            return if (value.equals("null", true)) {
+                "$QUOTE$value$QUOTE"
+            } else if (value == null) {
+                "null"
+            } else {
+                val replace = value
+                    .replace("""\""", """\\""")
+                    .replace(QUOTE, """\"""")
 
-        val filter = textTypes.filter { pgTypeName.startsWith(it, true) }
-        if (!filter.any()) {
-            return value ?: "null"
-        }
-        return if (value.equals("null", true)) {
-            "\"$value\""
-        } else if (value == null) {
-            "null"
-        } else {
-            val replace = value.replace("\"", "\\\"")
-            "\"$replace\""
-        }
+                val text = "$QUOTE$replace$QUOTE"
+                text
+            }
+//        }
+//        return value ?: "null"
     }
 }
 
@@ -80,14 +91,16 @@ open class PGArray<T : PGobject>(valueObject: List<T>?, typeName: String? = null
 fun <T : PGobject> List<T>.toPGArray(): PGArray<T> {
     return PGArray(this)
 }
+
 /**
  * Extension function to convert nullable list of 'T' to PGArray
  *
  * @return PGArray of type 'T'
  */
-fun <T : PGobject> List<T>?.toPGArray(type:String): PGArray<T> {
-    return PGArray(this,type)
+fun <T : PGobject> List<T>?.toPGArray(type: String): PGArray<T> {
+    return PGArray(this, type)
 }
+
 /**
  * Extension function to convert list of String to PGArray
  *

@@ -1,5 +1,6 @@
 package io.github.breninsul.jdbctemplatepostgresqltypes
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.github.breninsul.jdbctemplatepostgresqltypes.configuration.JdbcTypesDefaultMapperHolderAutoConfiguration
 import io.github.breninsul.jdbctemplatepostgresqltypes.mapper.JsonRow
 import io.github.breninsul.jdbctemplatepostgresqltypes.mapper.JsonRowMapper
@@ -106,34 +107,38 @@ class TypesTests {
         val jsonString3 = "{\"name\":\"fields\",\"value\":\"\"}"
 
         // Create PGJsonb objects from the strings
-        val pgJsonb1 = PGJsonb(jsonString1)
-        val pgJsonb2 = PGJsonb(jsonString2)
-        val pgJsonb3 = PGJsonb(jsonString3)
+        val mapper = jacksonObjectMapper()
+        val myJsonString = """{"classCategory":"BLOCK_TYPE","type":"RTU"}"""
+
+        val pgJsonb0 = mapper.readTree( myJsonString).toPGJsonb()
+        val pgJsonb1 = mapper.readTree( jsonString1).toPGJsonb()
+        val pgJsonb2 = mapper.readTree(jsonString2).toPGJsonb()
+        val pgJsonb3 = mapper.readTree(jsonString3).toPGJsonb()
 
         // Create a list of PGJsonb objects
-        val jsonbList = listOf(pgJsonb1, pgJsonb2, pgJsonb3)
+        val jsonbList = listOf(pgJsonb0, pgJsonb1, pgJsonb2, pgJsonb3)
 
         // Create a PGArray of PGJsonb objects
         val pgArray = PGArray(jsonbList, "jsonb")
-        jdbcClient.sql("create table test_text_array(id int,tst jsonb[])")
+        jdbcClient.sql("create table test_text_array2(id int,tst jsonb[])")
             .update()
         val updated =
-            jdbcClient.sql("insert into test_text_array(id,tst) values (1,:tst)")
+            jdbcClient.sql("insert into test_text_array2(id,tst) values (1,:tst)")
                 .param("tst", pgArray)
                 .update()
         Assertions.assertEquals(1, updated)
         val selectedId =
-            jdbcClient.sql("select id from test_text_array where tst=:tst")
+            jdbcClient.sql("select id from test_text_array2 where tst=:tst")
                 .param("tst", pgArray)
                 .query(Int::class.java)
                 .single()
         Assertions.assertEquals(1, selectedId)
         val selected =
-            jdbcClient.sql("select to_jsonb(tst) from test_text_array where tst=:tst")
+            jdbcClient.sql("select to_jsonb(tst) from test_text_array2 where tst=:tst")
                 .param("tst", pgArray)
                 .query(String::class.java)
                 .single()
-        Assertions.assertEquals("[{\"name\": \"mainFieldType\", \"value\": \"Description\"}, {\"name\": \"text\", \"value\": \"<table>    <tr>        <td>            <h2>Microsoft Xbox Series X</h2>            <p>Some text with \\\"quotes\\\" and \\\\backslashes\\\\</p>        </td>    </tr></table>\"}, {\"name\": \"fields\", \"value\": \"\"}]", selected)
+        Assertions.assertEquals("[{\"type\": \"RTU\", \"classCategory\": \"BLOCK_TYPE\"}, {\"name\": \"mainFieldType\", \"value\": \"Description\"}, {\"name\": \"text\", \"value\": \"<table>    <tr>        <td>            <h2>Microsoft Xbox Series X</h2>            <p>Some text with \\\"quotes\\\" and \\\\backslashes\\\\</p>        </td>    </tr></table>\"}, {\"name\": \"fields\", \"value\": \"\"}]", selected)
     }
 
 
@@ -176,7 +181,7 @@ class TypesTests {
 
     @Test
     fun testJsonbMapper() {
-        jdbcClient.sql("create table test_jsonb(id int,tst1 jsonb,tst2 jsonb)")
+        jdbcClient.sql("create table test_jsonb2(id int,tst1 jsonb,tst2 jsonb)")
             .update()
         val testObject1 = TestJson("t1", "t2")
         val testObject2 = TestJson("1", "2")
@@ -184,18 +189,18 @@ class TypesTests {
         val tst1 = PGJsonb(testObject1)
         val tst2 = PGJsonb(testObject2)
 
-        jdbcClient.sql("insert into test_jsonb(id,tst1,tst2) values (1,:tst1,:tst2)")
+        jdbcClient.sql("insert into test_jsonb2(id,tst1,tst2) values (1,:tst1,:tst2)")
             .param("tst1", tst1)
             .param("tst2", tst2)
             .update()
         val oneJson =
-            jdbcClient.sql("select tst1 from test_jsonb where true and case when :tst1 is null then true else tst1=:tst1 end ")
+            jdbcClient.sql("select tst1 from test_jsonb2 where true and case when :tst1 is null then true else tst1=:tst1 end ")
                 .param("tst1", tst1)
                 .query(TestJson::class.toRowMapper())
                 .single()
         Assertions.assertEquals(testObject1, oneJson)
         val twoJsonByName =
-            jdbcClient.sql("select tst1 as tst1,tst2 as tst2,id as id from test_jsonb where true and case when :tst1 is null then true else tst1=:tst1 end ")
+            jdbcClient.sql("select tst1 as tst1,tst2 as tst2,id as id from test_jsonb2 where true and case when :tst1 is null then true else tst1=:tst1 end ")
                 .param("tst1", tst1)
                 .query(JsonRowMapper(listOf(JsonRow("tst1", TestJson::class.java), JsonRow("tst2", TestJson::class.java), JsonRow("id", Int::class.java, true))))
                 .single() as Map<String, Any?>
@@ -203,7 +208,7 @@ class TypesTests {
         Assertions.assertEquals(twoJsonByName["tst2"], testObject2)
         Assertions.assertEquals(twoJsonByName["id"], 1)
         val twoJsonById =
-            jdbcClient.sql("select tst1 as tst1,tst2 as tst2,id as id from test_jsonb where true and case when :tst1 is null then true else tst1=:tst1 end ")
+            jdbcClient.sql("select tst1 as tst1,tst2 as tst2,id as id from test_jsonb2 where true and case when :tst1 is null then true else tst1=:tst1 end ")
                 .param("tst1", tst1)
                 .query(JsonRowMapper(listOf(JsonRow(null, TestJson::class.java), JsonRow(null, TestJson::class.java), JsonRow(null, Int::class.java, true))))
                 .single() as Map<Int, Any?>
