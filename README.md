@@ -28,7 +28,7 @@ add the following dependency:
 ````kotlin
 dependencies {
 //Other dependencies
-    implementation("jdbc-template-postgresql-types:1.0.14")
+    implementation("io.github.breninsul:jdbc-template-postgresql-types:1.0.14")
 //Other dependencies
 }
 
