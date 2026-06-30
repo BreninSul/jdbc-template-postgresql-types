@@ -84,16 +84,16 @@ open class JsonRowMapper<T : Any>(protected val types: List<JsonRow>, protected 
     override fun mapRow(
         rs: ResultSet,
         rowNum: Int,
-    ): T? {
+    ): T {
         val mapper = getMapper()
         if (isOneRow) {
             val type = orderedTypes.first()
-            return mapOneType(type, rs, mapper) as T?
+            return mapOneType(type, rs, mapper) as T
         }
         return orderedTypes.map {
             val key = it.name ?: it.id as Any
             return@map key to mapOneType(it, rs, mapper)
-        }.toMap() as T?
+        }.toMap() as T
     }
 
     /**
